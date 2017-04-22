@@ -215,17 +215,35 @@ class music_entity:
 
         logging.info("collect songs of playlist "+str(play_id))
         song_pool = []
+        attempt=0
+        while True:
+            try:
+                # get songs'id in this play list
+                for song in self.netease.playlist_detail(play_id):
+                    song_pool.append(song['id'])
 
-        try:
-            # get songs'id in this play list
-            for song in self.netease.playlist_detail(play_id):
-                song_pool.append(song['id'])
+                    # disable
+                    # self.song_attribute(song['id'])
+                break
+            except:
+                attempt+=1
+                if attempt>=5:
+                    logging.info(str(play_id)+" playlist failed")
+                    break
+                logging.info(str(play_id) + " playlist is empty")
+                time.sleep(5)
+                continue
 
-                #disable
-                # self.song_attribute(song['id'])
-
-        except:
-            logging.info(str(play_id)+" playlist is empty")
+        # try:
+        #     # get songs'id in this play list
+        #     for song in self.netease.playlist_detail(play_id):
+        #         song_pool.append(song['id'])
+        #
+        #         #disable
+        #         # self.song_attribute(song['id'])
+        #
+        # except:
+        #     logging.info(str(play_id)+" playlist is empty")
 
         self.play_info_collect[play_id]['songs'] = song_pool
 
@@ -235,7 +253,7 @@ class music_entity:
 
         :param user_id: id of the user
         """
-
+        time.sleep(random.random()+1.5)
         user_id = int(user_id)
 
         while True:
@@ -627,7 +645,7 @@ def graph_stat(G):
 
 
 test_id="48548007"
-graph=music_entity(user_id=test_id,graph_size=800,d=0.1)
+graph=music_entity(user_id=test_id,graph_size=500,d=0.1)
 graph.user_graph_dfs(graph.user_id) #生成图
 
 #第一部分，只要求提供图结构
